@@ -5,6 +5,9 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+
 #include <sodium.h>
 
 #define CIPHER_ABYTES crypto_secretstream_xchacha20poly1305_ABYTES
@@ -48,8 +51,9 @@ static void decrypt_file(unsigned char (*key)[CIPHER_KEYBYTES], FILE *pf, FILE *
             /* Premature end, end of stream reached before EOF) */
             fatal("Premature ending of data");
         }
-        if (fwrite(buf_out, (size_t)out_len, 1, pf) != 1)
+        if (fwrite(buf_out, 1, (size_t)out_len, pf) != (size_t)out_len)
             fatal("Failed to write plaintext");
+
     } while (!feof(cf));
 }
 
@@ -77,7 +81,7 @@ static void encrypt_file(unsigned char (*key)[CIPHER_KEYBYTES], FILE *pf, FILE *
             tag = crypto_secretstream_xchacha20poly1305_TAG_FINAL;
         crypto_secretstream_xchacha20poly1305_push(&state, buf_out, &out_len, buf_in,
             read_bytes, NULL, 0, tag);
-        if (fwrite(buf_out, (size_t)out_len, 1, cf) != 1)
+        if (fwrite(buf_out, 1, (size_t)out_len, cf) != (size_t)out_len)
             fatal("Failed to write ciphertext to file");
     } while (!feof(pf));
 }
@@ -88,6 +92,7 @@ static void generate_key(const char *keyfile)
     unsigned char key[CIPHER_KEYBYTES];
     FILE *f;
 
+    umask(0077);
     f = fopen(keyfile, "wb");
     if (!f)
         fatal("Failed to open key file for writing");
@@ -96,7 +101,7 @@ static void generate_key(const char *keyfile)
 
     if (fwrite(key, CIPHER_KEYBYTES, 1, f) != 1)
         fatal("Failed to write key to file");
-    
+
     fclose(f);
 }
 

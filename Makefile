@@ -24,4 +24,4 @@ clean:
 
 install: filecryptify
 	mkdir -p $(DESTDIR)$(PREFIX)/bin
-	install filecryptify $(DESTDIR)$(PREFIX)
+	install filecryptify $(DESTDIR)$(PREFIX)/bin

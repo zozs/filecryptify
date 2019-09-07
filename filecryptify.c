@@ -15,6 +15,14 @@
 #define CIPHER_KEYBYTES crypto_secretstream_xchacha20poly1305_KEYBYTES
 #define CHUNK_SIZE (4096)
 
+#ifndef FILECRYPTIFY_VERSION
+#define FILECRYPTIFY_VERSION "(unknown version)"
+#endif /* FILECRYPTIFY_VERSION */
+
+#define STRINGIFY(s) #s
+#define VERSION_STRING(str) STRINGIFY(str)
+#define FILECRYPTIFY_VERSION_STRING VERSION_STRING(FILECRYPTIFY_VERSION)
+
 /* Fatal error function. */
 static void fatal(const char *error)
 {
@@ -142,8 +150,9 @@ static void setup_files(const char *keyfile, const char *plaintextfile, const ch
 static void usage(const char *argv0)
 {
     fprintf(stderr, "usage: %s -G -k keyfile\n", argv0);
-    fprintf(stderr, "usage: %s -E [-p plaintextfile] [-c ciphertextfile] -k keyfile\n", argv0);
-    fprintf(stderr, "usage: %s -D [-p plaintextfile] [-c ciphertextfile] -k keyfile\n", argv0);
+    fprintf(stderr, "usage: %s -E -k keyfile [-p plaintextfile] [-c ciphertextfile]\n", argv0);
+    fprintf(stderr, "usage: %s -D -k keyfile [-p plaintextfile] [-c ciphertextfile]\n", argv0);
+    fprintf(stderr, "usage: %s -V\n", argv0);
     exit(1);
 }
 
@@ -154,13 +163,14 @@ int main(int argc, char **argv)
     bool decrypt_flag = false;
     bool encrypt_flag = false;
     bool generate_flag = false;
+	bool version_flag = false;
     int command_count = 0;
 
     char *keyfile = NULL;
     char *ciphertextfile = NULL;
     char *plaintextfile = NULL;
 
-    while ((c = getopt(argc, argv, "GEDk:p:c:")) != -1) {
+    while ((c = getopt(argc, argv, "GEDVk:p:c:")) != -1) {
         switch (c) {
         case 'G':
             generate_flag = true;
@@ -174,6 +184,10 @@ int main(int argc, char **argv)
             decrypt_flag = true;
             command_count++;
             break;
+		case 'V':
+			version_flag = true;
+			command_count++;
+			break;
         case 'k':
             if (!keyfile)
                 keyfile = strdup(optarg);
@@ -192,10 +206,14 @@ int main(int argc, char **argv)
     }
 
     /* Check command-line argument validity. */
-    if (command_count != 1 || !keyfile) {
-        /* Multiple commands (-E, -G, -D) were given, or missing keyfile. */
+    if (command_count != 1 || (!keyfile && !version_flag)) {
+        /* Multiple commands (-E, -G, -D, -V) were given, or missing keyfile if required. */
         usage(argv[0]);
-    }
+    } else if (version_flag) {
+		/* Print version. */
+		printf("filecryptify %s\n", FILECRYPTIFY_VERSION_STRING);
+		exit(0);
+	}
 
     /* Actually do stuff. */
     if (sodium_init() != 0)

@@ -7,7 +7,17 @@ Uses default `libsodium` algorithms, which is the ChaCha20 stream cipher combine
 
 ## Installation
 
-Run `make` in the directory. You need `libsodium` installed on your system.
+### Prerequisites
+
+ - libsodium >= 1.0.14
+ - BSD make
+ - Tested on Linux, FreeBSD, and OpenBSD
+
+### Commands
+
+Run `make` in the directory (on Linux, run `bmake` to use BSD make).
+
+Optionally, run `make install` to install to `/usr/local` (default, can be changed by setting `PREFIX`)
 
 ## Usage
 
@@ -15,12 +25,12 @@ Run `make` in the directory. You need `libsodium` installed on your system.
 
 Generates a new random symmetric key and stores it in the file `keyfile`.
 
-`usage: ./filecryptify -E [-p plaintextfile] [-c ciphertextfile] -k keyfile`
+`usage: ./filecryptify -E -k keyfile [-p plaintextfile] [-c ciphertextfile]`
 
 Encrypts the file `plaintextfile` (or reads from `stdin` if no file is given), using the symmetric key in `keyfile`.
 Stores the encrypted ciphertext in `ciphertextfile` (or writes to `stdout` if no file is given).
 
-`usage: ./filecryptify -D [-p plaintextfile] [-c ciphertextfile] -k keyfile`
+`usage: ./filecryptify -D -k keyfile [-p plaintextfile] [-c ciphertextfile]`
 
 Decrypts the file `ciphertextfile` (or reads from `stdin` if no file is given), using the symmetric key in `keyfile`.
 Stores the decrypted plaintext in `plaintextfile` (or writes to `stdout` if no file is given).
@@ -28,7 +38,7 @@ Stores the decrypted plaintext in `plaintextfile` (or writes to `stdout` if no f
 ## License
 
 ```
-Copyright 2018, Linus Karlsson
+Copyright 2018, 2019, Linus Karlsson
 
 Permission to use, copy, modify, and/or distribute this software for any
 purpose with or without fee is hereby granted, provided that the above

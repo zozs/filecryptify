@@ -1,4 +1,4 @@
-.PHONY: clean install
+.PHONY: check clean install
 
 PREFIX?=/usr/local
 DESTDIR?=
@@ -28,8 +28,11 @@ filecryptify: $(OBJS)
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
+check: filecryptify
+	cd tests && ./tests.sh
+
 clean:
-	rm -f filecryptify filecryptify.o
+	rm -f filecryptify filecryptify.o tests/tmp*
 
 install: filecryptify
 	mkdir -p $(DESTDIR)$(PREFIX)/bin $(DESTDIR)$(PREFIX)/$(MANDIR)/man1

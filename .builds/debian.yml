@@ -1,0 +1,29 @@
+image: debian/stable
+packages:
+- bmake
+- libsodium-dev
+- pkg-config
+- shellcheck
+sources:
+- https://git.sr.ht/~zozs/filecryptify
+secrets:
+- 90a4574a-ea2e-404c-917c-9e302ad3b26c # deploy key on github
+- 3b94b715-7fe4-487d-bba8-7a4b5a9e3155 # .ssh/known_hosts with github.com (ed25519)
+tasks:
+- lint: |
+    cd filecryptify
+    shellcheck tests/tests.sh
+- build: |
+    cd filecryptify
+    bmake
+- test: |
+    cd filecryptify
+    bmake check
+- mirror_github: |
+    # only mirror pushes to the repo, not e.g. patches to lists.sr.ht
+    # check by comparing HEAD to origin/main, if they match we go ahead
+    # and mirror to github, otherwise don't.
+    cd filecryptify
+    [ "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)" ] || complete-build
+    git remote add github git@github.com:zozs/filecryptify
+    git push github --follow-tags main:master

@@ -1,0 +1,38 @@
+name: 'Build and run tests'
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build-and-test-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: apt-get install bmake
+
+      - name: Build
+        run: bmake
+
+      - name: Test
+        run: bmake check
+
+  build-and-test-macos:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: brew install bmake
+
+      - name: Build
+        run: bmake
+
+      - name: Test
+        run: bmake check

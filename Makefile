@@ -35,6 +35,5 @@ clean:
 	rm -f filecryptify filecryptify.o tests/tmp*
 
 install: filecryptify
-	mkdir -p $(DESTDIR)$(PREFIX)/bin $(DESTDIR)$(PREFIX)/$(MANDIR)/man1
-	install filecryptify $(DESTDIR)$(PREFIX)/bin
-	install filecryptify.1 $(DESTDIR)$(PREFIX)/$(MANDIR)/man1
+	install -Dm755 filecryptify $(DESTDIR)$(PREFIX)/bin/filecryptify
+	install -Dm644 filecryptify.1 $(DESTDIR)$(PREFIX)/$(MANDIR)/man1/filecryptify.1

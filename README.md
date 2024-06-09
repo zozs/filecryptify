@@ -19,6 +19,18 @@ Run `make` in the directory (on Linux, run `bmake` to use BSD make).
 
 Optionally, run `make install` to install to `/usr/local` (default, can be changed by setting `PREFIX`)
 
+### FreeBSD
+
+Assuming you have a copy of the ports tree in `/usr/ports`
+
+```sh
+cd /usr/ports
+fetch https://git.sr.ht/~zozs/filecryptify/blob/main/misc/freebsd_port.patch
+git am freebsd_port.patch
+cd security/filecryptify
+make install clean
+```
+
 ## Usage
 
 `usage: ./filecryptify -G -k keyfile`
